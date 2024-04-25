@@ -1,0 +1,10 @@
+# Python related files
+**/__pycache__
+
+# db related files
+data.json
+db.*
+*.db
+
+# Env file
+.env
