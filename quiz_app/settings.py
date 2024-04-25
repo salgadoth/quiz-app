@@ -95,13 +95,15 @@ WSGI_APPLICATION = 'quiz_app.wsgi.application'
 #     }
 # }
 
+DATABASE_URL = os.environ['DATABASE_URL']
+
 DATABASES = {
     'default' : {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'dev',
         'PASSWORD': 'holdback',
-        'HOST': 'localhost',  # Or your PostgreSQL host
+        'HOST': DATABASE_URL,  # Or your PostgreSQL host
         'PORT': '5432',       # Default PostgreSQL port
     }
 }
