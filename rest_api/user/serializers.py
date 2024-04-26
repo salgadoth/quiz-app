@@ -1,8 +1,9 @@
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import UserAnswer
 from ..quiz.serializers import ChoiceSerializer
-from ..quiz.models import Choice
+from ..quiz.models import Choice, Quiz
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -43,3 +44,13 @@ class UserAnswerSerializer(serializers.ModelSerializer):
         user_answer.save()
 
         return user_answer
+    
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['username'] = user.username
+        token['is_staff'] = user.is_staff
+
+        return token

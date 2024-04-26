@@ -16,8 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_api.quiz.views import CategoryListView, CategoryDetailView, QuizListView, QuestionListView, QuizListByCategoryView, QuestionListByQuizView, ChoiceListView
-from rest_api.user.views import UserRegisterView, UserListView, UserLoginView, UserAnswerView
+from rest_api.user.views import UserRegisterView, UserListView, UserLoginView, UserAnswerView, get_user_answers, calculate_completion_percentage
 
 prefix = 'api'
 
@@ -31,6 +32,9 @@ urlpatterns = [
     path(f'{prefix}/question/', QuestionListView.as_view(), name='question'),
     path(f'{prefix}/answer/', UserAnswerView.as_view(), name='answer'),
     path(f'{prefix}/user/', UserListView.as_view(), name="user_detail"),
+    path(f'{prefix}/user/total-answers', get_user_answers, name="user_total_answers"),
+    path(f'{prefix}/user/prct-answers', calculate_completion_percentage, name="user_percentage_answers"),
     path(f'{prefix}/auth/register/', UserRegisterView.as_view(), name='user_register'),
-    path(f'{prefix}/auth/login/', UserLoginView.as_view(), name='user_login')
+    path(f'{prefix}/auth/login/', TokenObtainPairView.as_view(), name='obtain_token'),
+    path(f'{prefix}/auth/refresh/', TokenRefreshView.as_view(), name='refresh_token')
 ]

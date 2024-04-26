@@ -32,6 +32,15 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = '__all__'
+    
+    def validate(self, attrs):
+        title = attrs.get('title')
+        quiz = attrs.get('quiz')
+        if title and quiz:
+            existing_question = Question.objects.filter(title=title, quiz=quiz).first()
+            if existing_question:
+                raise serializers.ValidationError("A question with this title already exists for the specified quiz.")
+        return attrs
 
     def create(self, validated_data):
         choices_data = validated_data.pop('related_questions')
