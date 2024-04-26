@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_api.quiz.views import CategoryListView, CategoryDetailView, QuizListView, QuestionListView, QuizListByCategoryView, QuestionListByQuizView, ChoiceListView
-from rest_api.user.views import UserRegisterView, UserListView, UserLoginView, UserAnswerView, get_user_answers, calculate_completion_percentage
+from rest_api.user.views import UserRegisterView, UserListView, UserAnswerView, get_user_answers, calculate_completion_percentage, get_recent_quiz
 
 prefix = 'api'
 
@@ -34,6 +34,7 @@ urlpatterns = [
     path(f'{prefix}/user/', UserListView.as_view(), name="user_detail"),
     path(f'{prefix}/user/total-answers', get_user_answers, name="user_total_answers"),
     path(f'{prefix}/user/prct-answers', calculate_completion_percentage, name="user_percentage_answers"),
+    path(f'{prefix}/user/recent-answers', get_recent_quiz, name="user_recent_answers"),
     path(f'{prefix}/auth/register/', UserRegisterView.as_view(), name='user_register'),
     path(f'{prefix}/auth/login/', TokenObtainPairView.as_view(), name='obtain_token'),
     path(f'{prefix}/auth/refresh/', TokenRefreshView.as_view(), name='refresh_token')

@@ -1,4 +1,5 @@
 from collections import defaultdict
+from rest_api.quiz.models import Quiz
 from rest_api.user.models import UserAnswer
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -90,19 +91,34 @@ def calculate_completion_percentage(request):
 
     # Iterate over each UserAnswer instance
     for user_answer in user_answers:
-        quiz_id = user_answer.question.quiz.id
-        quiz_total_questions[quiz_id] += 1
+        quiz_title = user_answer.question.quiz.title
+        quiz_total_questions[quiz_title] += 1
 
         # Check if the submitted choices are correct
         if user_answer.submited_choice.filter(is_correct=True).exists():
-            quiz_correct_answers[quiz_id] += 1
+            quiz_correct_answers[quiz_title] += 1
 
     # Calculate the percentage for each quiz
-    for quiz_id, total_questions in quiz_total_questions.items():
-        correct_answers = quiz_correct_answers[quiz_id]
+    for quiz_title, total_questions in quiz_total_questions.items():
+        correct_answers = quiz_correct_answers[quiz_title]
         if total_questions > 0:
-            quiz_percentages[quiz_id] = (correct_answers / total_questions) * 100
+            quiz_percentages[quiz_title] = (correct_answers / total_questions) * 100
         else:
-            quiz_percentages[quiz_id] = 0
+            quiz_percentages[quiz_title] = 0
 
     return Response(dict(quiz_percentages))
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_recent_quiz(request):
+    user = request.user  # Assuming user is authenticated
+    recent_answer = UserAnswer.objects.filter(user=user).order_by('-submited_at').first()
+    if recent_answer:
+        recent_quiz_data = {
+            'quiz_id': recent_answer.question.quiz.id,
+            'quiz_title': recent_answer.question.quiz.title,
+            'submited_at': recent_answer.submited_at
+        }
+        return Response(recent_quiz_data)
+    else:
+        return Response({'message': 'User has not answered any questions yet.'}, status=status.HTTP_404_NOT_FOUND)
