@@ -104,9 +104,9 @@ DATABASE_USER = os.environ['DATABASE_USER']
 DATABASES = {
     'default' : {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'dev',
-        'PASSWORD': 'holdback',
+        'NAME': DATABASE_NAME,
+        'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
         'HOST': DATABASE_URL,  # Or your PostgreSQL host
         'PORT': '5432',       # Default PostgreSQL port
     }
