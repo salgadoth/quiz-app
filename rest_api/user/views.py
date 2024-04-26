@@ -1,5 +1,5 @@
 from collections import defaultdict
-from rest_api.quiz.models import Quiz
+from rest_api.quiz.models import Question, Quiz
 from rest_api.user.models import UserAnswer
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -82,43 +82,43 @@ def get_user_answers(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def calculate_completion_percentage(request):
-    user_answers = UserAnswer.objects.filter(user=request.user).select_related('question').prefetch_related('submited_choice')
+    recent_answers = UserAnswer.objects.filter(user=request.user).order_by('-submited_at')[:5]
 
-    # Dictionary to store percentage correct for each quiz
-    quiz_percentages = defaultdict(int)
-    quiz_total_questions = defaultdict(int)
-    quiz_correct_answers = defaultdict(int)
+    # Dictionary to store completion percentage for each quiz
+    quiz_percentages = {}
 
-    # Iterate over each UserAnswer instance
-    for user_answer in user_answers:
+    for user_answer in recent_answers:
         quiz_title = user_answer.question.quiz.title
-        quiz_total_questions[quiz_title] += 1
+        quiz_total_questions = Question.objects.filter(quiz=user_answer.question.quiz).count()
+        correct_answers = user_answer.submited_choice.filter(is_correct=True).count()
 
-        # Check if the submitted choices are correct
-        if user_answer.submited_choice.filter(is_correct=True).exists():
-            quiz_correct_answers[quiz_title] += 1
-
-    # Calculate the percentage for each quiz
-    for quiz_title, total_questions in quiz_total_questions.items():
-        correct_answers = quiz_correct_answers[quiz_title]
-        if total_questions > 0:
-            quiz_percentages[quiz_title] = (correct_answers / total_questions) * 100
+        # Calculate the completion percentage for the quiz
+        if quiz_total_questions > 0:
+            completion_percentage = (correct_answers / quiz_total_questions) * 100
         else:
-            quiz_percentages[quiz_title] = 0
+            completion_percentage = 0
 
-    return Response(dict(quiz_percentages))
+        # Store the completion percentage in the dictionary
+        quiz_percentages[quiz_title] = completion_percentage
+
+    return Response(quiz_percentages)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_recent_quiz(request):
     user = request.user  # Assuming user is authenticated
-    recent_answer = UserAnswer.objects.filter(user=user).order_by('-submited_at').first()
-    if recent_answer:
-        recent_quiz_data = {
-            'quiz_id': recent_answer.question.quiz.id,
-            'quiz_title': recent_answer.question.quiz.title,
-            'submited_at': recent_answer.submited_at
+    recent_answers = UserAnswer.objects.filter(user=user).order_by('-submited_at')[:5]
+    recent_quizzes_data = []
+    for answer in recent_answers:
+        quiz_data = {
+            'quiz_id': answer.question.quiz.id,
+            'quiz_title': answer.question.quiz.title,
+            'submited_at': answer.submited_at
         }
-        return Response(recent_quiz_data)
+        recent_quizzes_data.append(quiz_data)
+    
+    if recent_quizzes_data:
+        return Response(recent_quizzes_data)
     else:
         return Response({'message': 'User has not answered any questions yet.'}, status=status.HTTP_404_NOT_FOUND)
+   
