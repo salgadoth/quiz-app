@@ -21,10 +21,17 @@ class CategoryListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CategoryDetailView(generics.RetrieveAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    lookup_field = 'title'
-    look_up_kwarg = 'title'
+    def get(request, *args, **kwargs):
+        title = kwargs['title']
+        category = Category.objects.filter(title__icontains=title).first()
+        if not category:
+            return Response({'message': 'Category not found'}, status=status.HTTP_400_BAD_REQUEST) 
+        data = Quiz.objects.filter(category=category.id)
+        if not data.first():
+            serializer = CategorySerializer(category)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = QuizSerializer(data, many = True)
+        return Response(serializer.data)
         
 class QuizListView(APIView):
     def post(self, request):
@@ -35,11 +42,6 @@ class QuizListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class QuizListByCategoryView(generics.ListAPIView):
-    # queryset = Quiz.objects.all()
-    # serializer_class = QuizSerializer
-    # lookup_field = 'category'
-    # look_up_kwarg = 'title'
-    
     def get(request, *args, **kwargs):
         title = kwargs['title']
         category = Category.objects.filter(title__icontains=title).first()

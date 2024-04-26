@@ -7,7 +7,7 @@ class UserAnswer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     submited_choice = models.ManyToManyField(Choice, blank=True)
-    submited_words = ArrayField((models.CharField(max_length=50, blank=True, null=True)))
+    submited_words = ArrayField((models.CharField(max_length=50)), blank=True, null=True)
     submited_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):

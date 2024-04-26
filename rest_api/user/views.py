@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.contrib.auth.models import User
-from .serializers import UserSerializer
+from .serializers import UserAnswerSerializer, UserSerializer
 
 class UserLoginView(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -36,3 +36,10 @@ class UserListView(APIView):
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
         
+class UserAnswerView(APIView):
+    def post(self, request):
+        serializer = UserAnswerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
