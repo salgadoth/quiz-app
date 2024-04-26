@@ -29,14 +29,15 @@ class Question(models.Model):
         ('WORD', 'Words choice')
     ]
     
-    text = models.CharField(max_length=255)
+    title = models.CharField(max_length=100, default='title')
+    text = models.CharField(max_length=255, blank=True, null=True)
     choice_type = models.CharField(max_length=50, choices=CHOICE_TYPE)
     created_date = models.DateTimeField(auto_now_add=True)
     quiz = models.ForeignKey(Quiz, related_name='related_quiz', on_delete=models.CASCADE)
+    correct_words = ArrayField(models.CharField(max_length=255), blank=True, null=True)
     
 class Choice(models.Model):
     text = models.CharField(max_length=255, blank=True, null=True)
-    correct_words = ArrayField(models.CharField(max_length=255), blank=True, null=True)
     is_correct = models.BooleanField(default=False)
     created_date = models.DateTimeField(auto_now_add=True)
     question = models.ForeignKey(Question, related_name='related_questions', on_delete=models.CASCADE)

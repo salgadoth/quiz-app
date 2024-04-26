@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from rest_api.quiz.views import CategoryListView, CategoryDetailView, QuizListView, QuestionListView, QuizListByCategoryView, QuestionListByQuizView
+from rest_api.quiz.views import CategoryListView, CategoryDetailView, QuizListView, QuestionListView, QuizListByCategoryView, QuestionListByQuizView, ChoiceListView
 from rest_api.user.views import UserRegisterView, UserListView, UserLoginView
 
 prefix = 'api'
@@ -29,6 +29,7 @@ urlpatterns = [
     path(f'{prefix}/quiz/', QuizListView.as_view(), name='quiz'),
     path(f'{prefix}/quiz/<int:pk>/questions', QuestionListByQuizView.as_view(), name='question_detail'),
     path(f'{prefix}/question/', QuestionListView.as_view(), name='question'),
+    path(f'{prefix}/choice/', ChoiceListView.as_view(), name='choice_list'),
     path(f'{prefix}/user/', UserListView.as_view(), name="user_detail"),
     path(f'{prefix}/auth/register/', UserRegisterView.as_view(), name='user_register'),
     path(f'{prefix}/auth/login/', UserLoginView.as_view(), name='user_login')

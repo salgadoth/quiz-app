@@ -27,7 +27,7 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     quiz = serializers.PrimaryKeyRelatedField(queryset=Quiz.objects.all())  # Assuming Quiz is the related model
-    choices = ChoiceSerializer(source='related_questions', many=True)  # Nested serialization for choices
+    choices = ChoiceSerializer(source='related_questions', many=True, required=False)  # Nested serialization for choices
 
     class Meta:
         model = Question

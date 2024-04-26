@@ -3,6 +3,7 @@
 
 # db related files
 data.json
+**/migrations
 db.*
 *.db
 
