@@ -97,6 +97,9 @@ WSGI_APPLICATION = 'quiz_app.wsgi.application'
 # }
 
 DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_PASSWORD = os.environ['DATABASE_PWD']
+DATABASE_NAME = os.environ['DATABASE_NAME']
+DATABASE_USER = os.environ['DATABASE_USER']
 
 DATABASES = {
     'default' : {
